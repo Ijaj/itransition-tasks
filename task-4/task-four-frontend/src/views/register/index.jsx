@@ -34,14 +34,14 @@ export default function Register() {
         sessionStorage.setItem(constants.k_token, result.data.token);
         navigate("/dashboard");
       }
-      else if(result.status === 200 && result.data > 0){
+      else if(result.status === 200 && result.data.rows > 0){
         window.alert('Reactivated Account');
         sessionStorage.setItem(constants.k_id, result.data.id);
         sessionStorage.setItem(constants.k_token, result.data.token);
         navigate("/dashboard");
       }
       else{
-        window.alert(result.data);
+        window.alert(result.status, result.data);
       }
     })
     .catch(error => {

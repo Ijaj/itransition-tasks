@@ -39,7 +39,7 @@ namespace TastFrour.Controllers
             {
                 user.PasswordHash = "";
             });
-            return allUsers;
+            return Ok(allUsers);
         }
 
         [Authorize]
@@ -57,7 +57,7 @@ namespace TastFrour.Controllers
                 return NotFound();
             }
 
-            return user;
+            return Ok(user);
         }
 
         [HttpPost("register")]
@@ -70,6 +70,7 @@ namespace TastFrour.Controllers
             Console.WriteLine(regReq.Email);
 
             User? existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == regReq.Email);
+			string token = "";
 
             if (existingUser != null)
             {
@@ -80,9 +81,12 @@ namespace TastFrour.Controllers
                 else
                 {
                     existingUser.Status = 1;
+                    existingUser.Name = regReq.Name;
+                    existingUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(regReq.Password);
                     _context.Entry(existingUser).State = EntityState.Modified;
                     int rowsAffected = await _context.SaveChangesAsync();
-                    return Ok(rowsAffected);
+					token = JWToken.GenerateJwtToken(existingUser, _configuration);
+                    return Ok(new {rows = rowsAffected, id = existingUser.Id, token});
                 }
             }
 
@@ -99,7 +103,7 @@ namespace TastFrour.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            string token = JWToken.GenerateJwtToken(newUser, _configuration);
+            token = JWToken.GenerateJwtToken(newUser, _configuration);
             return CreatedAtAction(nameof(GetUser), new { id = newUser.Id, userId = newUser.Id }, new { id = newUser.Id, token });
         }
 

@@ -30,7 +30,6 @@ function DrawingBoard() {
         await connectionRef.current.send("JoinBoard", "board1");
 
         connectionRef.current.on("ReceiveDrawing", (drawingData) => {
-          // console.log("Received drawing data:");
           handleDataReceive(drawingData);
         });
       } catch (err) {
@@ -50,17 +49,10 @@ function DrawingBoard() {
   function handleDataReceive(drawingData){
     const split = drawingData.split('|');
     if(split[0] === id){
-      // own data, no need to redraw
       return;
     }
 
     const newData = JSON.parse(split[2]);
-    // setLines(old => {
-    //   console.log(old);
-    //   console.log(newData);
-    //   return old;
-    // });
-
     setLines(old => [...old, newData]);
   }
 
@@ -79,7 +71,6 @@ function DrawingBoard() {
     const context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Set the pencil style
     context.strokeStyle = 'black';
     context.lineWidth = 2;
     context.lineJoin = 'round';
@@ -87,9 +78,7 @@ function DrawingBoard() {
     context.fillStyle = color;
     context.strokeStyle = color;
 
-    // Draw all lines from the lines state
     if (lines.length > 0) {
-      // console.log(lines);
       lines.forEach(line => {
         if(line.length === 0) return;
         context.beginPath();
@@ -101,7 +90,6 @@ function DrawingBoard() {
       });
     }
 
-    // Draw the current line being drawn
     if (currentLine.length > 0) {
       context.beginPath();
       context.moveTo(currentLine[0].x, currentLine[0].y);
@@ -143,11 +131,11 @@ function DrawingBoard() {
   }
 
   return (
-    <Box sx={{ border: '2px solid black' }} >
+    <Box>
       <canvas
         ref={canvasRef}
-        width={800}
-        height={600}
+        width={window.innerWidth - 32}
+        height={window.innerHeight - 100}
         style={{ border: '1px solid black' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

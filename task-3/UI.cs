@@ -34,7 +34,6 @@ namespace Game
             {
                 Console.WriteLine($"{i + 1}: {menu[i]}");
             }
-            Console.WriteLine();
         }
 
         public static void displayRound(int round, int moveCount)
@@ -46,8 +45,9 @@ namespace Game
         public static string takeInput()
         {
             Console.WriteLine("------------------------------------------------------------");
-            Console.Write("Your Move: ");
+            Console.Write("Your Move: ");  
             string? input = Console.ReadLine();
+            Console.WriteLine();
             return input == null ? "" : input;
         }
 
@@ -91,8 +91,8 @@ namespace Game
             for (int i = 0; i < n; i++)
             {
                 tableData[0, i + 1] = headers[i + 1];
-                tableData[1, i + 1] = (playerResults[i] == 1 ? "WIN" : "LOSE").PadLeft(maxHeaderLength);
-                tableData[2, i + 1] = (playerResults[i] == 1 ? "LOSE" : "WIN").PadLeft(maxHeaderLength);
+                tableData[1, i + 1] = (playerResults[i] == -1 ? "WIN" : playerResults[i] == 1 ? "LOSE" : "DRAW").PadLeft(maxHeaderLength);
+                tableData[2, i + 1] = (playerResults[i] == -1 ? "LOSE" : playerResults[i] == 1 ? "WIN" : "DRAW").PadLeft(maxHeaderLength);
             }
 
             PrintTable(tableData);
@@ -162,12 +162,14 @@ namespace Game
             Console.WriteLine();
         }
 
-        public static void displayRoundWinner(int playerMove, int cpuMove, string winner)
+        public static void displayRoundWinner(int playerMove, int cpuMove, int result)
         {
+			Console.WriteLine("============================================================");
             Console.WriteLine($"Player move: {menu[playerMove]}.");
             Console.WriteLine($"CPU move: {menu[cpuMove]}.");
-            Console.WriteLine($"{winner} wins!!!");
-            Console.WriteLine("############################################################");
+			string winner = result == -1 ? "Player Wins" : result == 1 ? "CPU Wins" : "DRAW";
+            Console.WriteLine(winner);
+            Console.WriteLine("============================================================");
         }
     }
 }

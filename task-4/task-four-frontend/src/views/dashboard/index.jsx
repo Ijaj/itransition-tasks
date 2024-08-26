@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [tableData, setTableData] = useState([]);
   const [rowSelection, setRowSelection] = useState({});
   const [selectedCount, setSelectedCount] = useState(0);
+  const [user, setUser] = useState(null);
 
   const columns = [
     {
@@ -69,12 +70,11 @@ export default function Dashboard() {
     sessionStorage.removeItem(constants.k_id);
     sessionStorage.removeItem(constants.k_token);
     sessionStorage.removeItem(constants.k_user);
-    navigate('/logout', { replace: true });
+    window.location.href = '/login';
   }
 
-  const url = `${process.env.REACT_APP_ALL_USERS}/${userId}`;
-
   function fetchAllUsers() {
+    const url = `${process.env.REACT_APP_ALL_USERS}/${userId}`;
     axios.get(url, axios_config(token))
       .then(result => {
         if (result.status === 401) {
@@ -93,7 +93,28 @@ export default function Dashboard() {
       });
   }
 
+  function fetchCurrnetUsers() {
+    const url = `${process.env.REACT_APP_SINGLE_USER}/${userId}/${userId}`;
+    axios.get(url, axios_config(token))
+      .then(result => {
+        if (result.status === 401) {
+          // logout
+          logout();
+        }
+        else if (result.status === 200) {
+          setUser(result.data);
+        }
+      })
+      .catch(error => {
+        window.alert(error.response.data);
+        if (error.response.status === 401) {
+          logout();
+        }
+      });
+  }
+
   useEffect(() => {
+    fetchCurrnetUsers();
     fetchAllUsers();
   }, []);
 
@@ -182,7 +203,7 @@ export default function Dashboard() {
           <Card elevation={5}>
             <CardHeader title={
               <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-                <Typography variant="h5" fontWeight={700}>Users List</Typography>
+                <Typography variant="h5" fontWeight={700}>{user ? user.email : "Fetching..."}</Typography>
                 <Tooltip title="Logout">
                   <IconButton
                     onClick={logout}

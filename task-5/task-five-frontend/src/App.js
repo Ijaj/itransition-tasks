@@ -5,7 +5,7 @@ import UserTable from './components/UserTable.js';
 import { generateUsers } from './utils/dataGenerator.js';
 
 const App = () => {
-  const [region, setRegion] = useState('mexico');
+  const [region, setRegion] = useState('en_US');
   const [errorRate, setErrorRate] = useState(0);
   const [seed, setSeed] = useState(Date.now());
   const [users, setUsers] = useState([]);

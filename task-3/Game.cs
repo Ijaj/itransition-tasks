@@ -5,18 +5,14 @@ namespace Game
 {
     class GameRunner
     {
-        private bool playerTurn = false; // start with computer turn first
-        private List<string> cpuHmac = new List<string>();
-
-        private int n, half, lastPlayerMove = -1, lastCPUMove = -1;
+        bool playerTurn = false;
+        List<string> cpuHmac = new List<string>();
+        int n, half, lastPlayerMove = -1, lastCPUMove = -1;
         int[,] winMatrix;
-        // UI uI;
         int rounds;
-        int[] wins;   // 0 = cpu wins, 1 = player wins. initialize with all cpu wins
+        int[] wins;
         const int numberOfMovesPerRound = 2;
         int moveCount = 0;
-        int totalPlayerWins = 0;
-        int totalCPUWins = 0;
         Random rnd;
 
         public GameRunner(string[] args)
@@ -48,13 +44,9 @@ namespace Game
                 if (moveCount == numberOfMovesPerRound)
                 {
                     moveCount = 0;
-                    bool p_win = didPlayerWin();
-                    if (p_win) totalPlayerWins += 1;
-                    else totalCPUWins += 1;
 
-                    UI.displayRoundWinner(lastPlayerMove, lastCPUMove, p_win ? "Player" : "CPU");
-
-                    wins[i] = p_win ? 1 : 0;
+                    UI.displayRoundWinner(lastPlayerMove, lastCPUMove, winMatrix[lastCPUMove, lastPlayerMove]);
+                    wins[i] = winMatrix[lastCPUMove, lastPlayerMove];
                     i += 1;
                     if (i == rounds) break;
                 }
@@ -108,11 +100,6 @@ namespace Game
             {
                 wins = new int[rounds];
             }
-        }
-
-        private bool didPlayerWin()
-        {
-            return winMatrix[lastCPUMove, lastPlayerMove] == -1;
         }
     }
 }
